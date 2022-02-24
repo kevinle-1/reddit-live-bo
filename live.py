@@ -65,12 +65,12 @@ if __name__ == "__main__":
 
     while True:
         print("Running task...")
-        time.sleep(240)
+        time.sleep(cfg["refresh"])
 
         entries_snapshot = update_entries()
         entries_new = C = {k:v for k,v in entries_snapshot.items() if k not in entries_current_state}
 
-        entries_current_state = entries_new
+        entries_current_state = entries_snapshot
 
         print(entries_new)
 

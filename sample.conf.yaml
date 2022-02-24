@@ -1,2 +1,3 @@
 endpoints:
   webhook: 'webhook_url'
+refresh: 120
