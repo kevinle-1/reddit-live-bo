@@ -1,0 +1,2 @@
+endpoints:
+  webhook: 'webhook_url'

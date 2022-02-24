@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import markdownify
 import requests
+import yaml
 import time
 import re
 
@@ -10,18 +11,11 @@ MD_URL_REGEX = r'\[.*\]\(.*\)'
 
 REPLACE_CHARS = "<>"
 
+with open("conf.yaml", "r") as c: cfg = yaml.safe_load(c)
+
 REDDIT_LIVE_LINK = "https://www.reddit.com/live/18hnzysb1elcs"
 
-headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) '
-                         'AppleWebKit/534.11 (KHTML, like Gecko) '
-                         'Chrome/23.0.1271.64 Safari/537.11',
-           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-           'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-           'Accept-Encoding': 'none',
-           'Accept-Language': 'en-US,en;q=0.8',
-           'Connection': 'keep-alive'
-}
-
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36"}
 
 def update_entries():
     # with open("sample.html", 'r', encoding='utf-8') as f:
@@ -29,9 +23,9 @@ def update_entries():
 
     entries = {}
 
-    html_content = requests.get(REDDIT_LIVE_LINK, headers).content
+    html_content = requests.get(REDDIT_LIVE_LINK, headers=headers).content
 
-    print(html_content)
+    #print(html_content)
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -51,24 +45,33 @@ def update_entries():
         for char in REPLACE_CHARS:
             live_entry_md = live_entry_md.replace(char, "")
 
-        msg = f"{live_entry_md.strip()} {','.join(links)}" # Add links to send
+        msg = f"{live_entry_md.strip()}{','.join(links)}" # Add links to send
 
         entries[live_entry_guid] = msg
 
     return entries
 
-if __name__ == "__main__":
-    entries_initial = {}
+def send_to_webhook(entries_new):
+    for key, value in entries_new.items():
+        print(f"Sending {key} to webhook")
 
-    entries_initial = update_entries() # We don't send existing entries
+        data = {"content": value}
+        requests.post(cfg['endpoints']['webhook'], json=data)
+
+if __name__ == "__main__":
+    entries_current_state = update_entries() # We don't send existing entries
 
     #print(entries_initial)
 
     while True:
         print("Running task...")
-        time.sleep(60)
+        time.sleep(240)
 
         entries_snapshot = update_entries()
-        entries_new = C = {k:v for k,v in entries_snapshot.items() if k not in entries_initial}
+        entries_new = C = {k:v for k,v in entries_snapshot.items() if k not in entries_current_state}
+
+        entries_current_state = entries_new
 
         print(entries_new)
+
+        send_to_webhook(entries_new)
