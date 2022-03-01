@@ -1,8 +1,10 @@
 # reddit-live-bot
 
-A bot to monitor Reddit Live event threads and send messages to certain chat apps using webhooks
+A script to monitor Reddit Live event threads and send updates using webhooks.
 
-Tested with Discord & Slack webhook URLs
+Tested with Discord & Slack webhook URLs.
+
+Refreshed every 2 minutes (Default), this can be configured in `conf.yaml`
 
 ## Requirements
 
@@ -12,4 +14,5 @@ Tested with Discord & Slack webhook URLs
 ## Running
 
 1. `pip install -r requirements.txt`
-2. Create your own `conf.yaml` file from the samaple and set webhook URL
+2. Create your own `conf.yaml` file from the sample and set [Discord](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) or [Slack](https://api.slack.com/messaging/webhooks) webhook URL
+3. `python live.py`
