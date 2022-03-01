@@ -13,8 +13,6 @@ REPLACE_CHARS = "<>"
 
 with open("conf.yaml", "r") as c: cfg = yaml.safe_load(c)
 
-REDDIT_LIVE_LINK = "https://www.reddit.com/live/18hnzysb1elcs"
-
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36"}
 
 def update_entries():
@@ -23,7 +21,7 @@ def update_entries():
 
     entries = {}
 
-    html_content = requests.get(REDDIT_LIVE_LINK, headers=headers).content
+    html_content = requests.get(cfg['endpoints']['reddit'], headers=headers).content
 
     #print(html_content)
 
