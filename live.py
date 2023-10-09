@@ -18,7 +18,7 @@ GUID_REGEX = r'[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 URL_REGEX = r'\(https?:.*\)'
 MD_URL_REGEX = r'\[.*\]\(.*\)'
 
-REPLACE_CHARS = "<>"
+REPLACE_CHARS = "<>()"
 
 with open("conf.yaml", "r") as c: cfg = yaml.safe_load(c)
 
@@ -42,11 +42,11 @@ def update_entries():
 
         links = re.findall(URL_REGEX, live_entry_md) # Extract all links
         live_entry_md = re.sub(MD_URL_REGEX, '', live_entry_md) # Remove all markdown links
+        
+        msg = f"{live_entry_md.strip()} - {', '.join(links)}" # Add links to send
 
         for char in REPLACE_CHARS:
-            live_entry_md = live_entry_md.replace(char, "")
-
-        msg = f"{live_entry_md.strip()}{','.join(links)}" # Add links to send
+            msg = msg.replace(char, "")
 
         entries[live_entry_guid] = msg
 
