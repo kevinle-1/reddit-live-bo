@@ -1,4 +1,5 @@
 endpoints:
-  reddit: 'https://www.reddit.com/live/18hnzysb1elcs'
-  webhook: 'webhook_url'
+  reddit: 'https://www.reddit.com/live/1bsso361afr0r'
+  webhooks: 
+    - 'webhook_url'
 refresh: 120

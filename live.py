@@ -1,9 +1,18 @@
 from bs4 import BeautifulSoup
 import markdownify
 import requests
+import logging
 import yaml
 import time
 import re
+
+logger = logging.getLogger('live')
+logger.setLevel(logging.DEBUG)
+
+fh = logging.FileHandler('live.log')
+fh.setLevel(logging.INFO)
+
+logger.addHandler(fh)
 
 GUID_REGEX = r'[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
 URL_REGEX = r'\(https?:.*\)'
@@ -16,15 +25,9 @@ with open("conf.yaml", "r") as c: cfg = yaml.safe_load(c)
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36"}
 
 def update_entries():
-    # with open("sample.html", 'r', encoding='utf-8') as f:
-    #     live = f.read()
-
     entries = {}
 
     html_content = requests.get(cfg['endpoints']['reddit'], headers=headers).content
-
-    #print(html_content)
-
     soup = BeautifulSoup(html_content, 'html.parser')
 
     live_updates = soup.find_all('li', {'class': 'liveupdate'})
@@ -54,15 +57,18 @@ def send_to_webhook(entries_new):
         print(f"Sending {key} to webhook")
 
         data = {"content": value}
-        requests.post(cfg['endpoints']['webhook'], json=data)
+        webhooks = cfg['endpoints']['webhooks']
+        
+        logger.debug(f"Sending {key} to {len(webhooks)} webhooks")
+        
+        for webhook in webhooks:
+            requests.post(webhook, json=data)
 
 if __name__ == "__main__":
-    entries_current_state = update_entries() # We don't send existing entries
-
-    #print(entries_initial)
+    entries_current_state = update_entries() # Don't send existing entries
 
     while True:
-        print("Running task...")
+        logger.info("Checking for additional posts...")
         time.sleep(cfg["refresh"])
 
         entries_snapshot = update_entries()

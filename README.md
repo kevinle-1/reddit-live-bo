@@ -2,7 +2,7 @@
 
 A script to monitor Reddit Live event threads and send updates using webhooks.
 
-Tested with Discord & Slack webhook URLs.
+Intended to be sent to Discord & Slack webhook URLs.
 
 Refreshed every 2 minutes (Default), this can be configured in `conf.yaml`
 
