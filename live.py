@@ -43,12 +43,15 @@ def update_entries():
         links = re.findall(URL_REGEX, live_entry_md) # Extract all links
         live_entry_md = re.sub(MD_URL_REGEX, '', live_entry_md) # Remove all markdown links
         
-        msg = f"{live_entry_md.strip()} - {', '.join(links)}" # Add links to send
+        text = live_entry_md.strip() 
+        
+        if links:
+            text = text + '\n' + ', '.join(links) # Add links to end of text
 
         for char in REPLACE_CHARS:
-            msg = msg.replace(char, "")
+            text = text.replace(char, "")
 
-        entries[live_entry_guid] = msg
+        entries[live_entry_guid] = text
 
     return entries
 
