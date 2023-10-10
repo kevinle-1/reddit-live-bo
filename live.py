@@ -69,7 +69,6 @@ def send_to_webhook(entries_new):
 
 if __name__ == "__main__":
     entries_current_state = update_entries() # Don't send existing entries
-    send_to_webhook(entries_current_state)
 
     while True:
         logger.info("Checking for additional posts...")
